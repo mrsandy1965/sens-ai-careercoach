@@ -19,7 +19,7 @@ import {
 import Image from "next/image";
 import { features } from "@/data/features";
 import { testimonial } from "@/data/testimonial";
-import { faqs } from "@/data/faqs";
+import { faqs } from "@/data/faq";
 import { howItWorks } from "@/data/howItWorks";
 
 export default function LandingPage() {
