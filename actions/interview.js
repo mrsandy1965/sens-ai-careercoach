@@ -105,9 +105,13 @@ export async function saveQuizResult(questions, answers, score) {
     `;
 
     try {
-      const tipResult = await model.generateContent(improvementPrompt);
+      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+      const tipResult = await ai.models.generateContent({
+        model: "gemini-1.5-flash",
+        contents: improvementPrompt,
+      });
 
-      improvementTip = tipResult.response.text().trim();
+      improvementTip = (tipResult.text || JSON.stringify(tipResult)).trim();
       console.log(improvementTip);
     } catch (error) {
       console.error("Error generating improvement tip:", error);

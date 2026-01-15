@@ -2,10 +2,7 @@
 
 import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+import { GoogleGenAI } from "@google/genai";
 
 export async function generateCoverLetter(data) {
   const { userId } = await auth();
@@ -43,8 +40,14 @@ export async function generateCoverLetter(data) {
   `;
 
   try {
-    const result = await model.generateContent(prompt);
-    const content = result.response.text().trim();
+    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+    console.log("Generating cover letter with prompt length:", prompt.length);
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: prompt,
+    });
+    console.log("Cover letter generation successful");
+    const content = (response.text || response.content?.text || JSON.stringify(response)).trim();
 
     const coverLetter = await db.coverLetter.create({
       data: {
@@ -59,8 +62,9 @@ export async function generateCoverLetter(data) {
 
     return coverLetter;
   } catch (error) {
-    console.error("Error generating cover letter:", error.message);
-    throw new Error("Failed to generate cover letter");
+    console.error("Error generating cover letter:", error);
+    console.error("Error details:", JSON.stringify(error, null, 2));
+    throw new Error("Failed to generate cover letter: " + error.message);
   }
 }
 
