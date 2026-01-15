@@ -198,10 +198,11 @@ export default function LandingPage() {
             <Link href="/dashboard" passHref>
               <Button
                 size="lg"
-                variant="secondary"
-                className="h-11 mt-5 animate-bounce"
+                variant="ghost"
+                className="h-12 px-8 mt-5 !bg-white !text-blue-600 hover:!bg-white/90 hover:scale-105 shadow-2xl hover:shadow-3xl transition-all duration-300 font-bold text-lg group border-2 border-white/50"
               >
-                Start Your Journey Today <ArrowRight className="ml-2 h-4 w-4" />
+                Start Your Journey Today
+                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
           </div>

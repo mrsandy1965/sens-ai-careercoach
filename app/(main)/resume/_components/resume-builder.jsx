@@ -154,9 +154,10 @@ export default function ResumeBuilder({ initialContent }) {
         </h1>
         <div className="space-x-2">
           <Button
-            variant="destructive"
+            variant="outline"
             onClick={handleSubmit(onSubmit)}
             disabled={isSaving}
+            className="font-semibold"
           >
             {isSaving ? (
               <>
@@ -170,7 +171,7 @@ export default function ResumeBuilder({ initialContent }) {
               </>
             )}
           </Button>
-          <Button onClick={generatePDF} disabled={isGenerating}>
+          <Button onClick={generatePDF} disabled={isGenerating} className="font-semibold">
             {isGenerating ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />

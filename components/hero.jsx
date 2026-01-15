@@ -40,14 +40,15 @@ const HeroSection = () => {
             AI-powered tools for job success.
           </p>
         </div>
-        <div className="flex justify-center space-x-4">
+        <div className="flex flex-wrap justify-center gap-4 mt-8">
           <Link href="/dashboard">
-            <Button size="lg" className="px-8">
-              Get Started
+            <Button size="lg" className="group relative overflow-hidden">
+              <span className="relative z-10">Get Started</span>
+              <div className="absolute inset-0 bg-white/10 transform translate-y-full transition-transform duration-300 group-hover:translate-y-0"></div>
             </Button>
           </Link>
-          <Link href="https://www.youtube.com/roadsidecoder">
-            <Button size="lg" variant="outline" className="px-8">
+          <Link href="https://www.youtube.com/roadsidecoder" target="_blank">
+            <Button size="lg" variant="outline">
               Watch Demo
             </Button>
           </Link>

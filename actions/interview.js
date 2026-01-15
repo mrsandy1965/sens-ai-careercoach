@@ -2,10 +2,7 @@
 
 import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+import { GoogleGenAI } from "@google/genai";
 
 export async function generateQuiz() {
   const { userId } = await auth();
@@ -21,38 +18,46 @@ export async function generateQuiz() {
 
   if (!user) throw new Error("User not found");
 
-  const prompt = `
-    Generate 10 technical interview questions for a ${
-      user.industry
-    } professional${
-    user.skills?.length ? ` with expertise in ${user.skills.join(", ")}` : ""
-  }.
+  const prompt = `Generate 10 technical interview questions for a ${user.industry} professional${user.skills?.length ? ` with expertise in ${user.skills.join(", ")}` : ""}.
     
-    Each question should be multiple choice with 4 options.
+Each question should be multiple choice with 4 options.
     
-    Return the response in this JSON format only, no additional text:
+Return the response in this JSON format only, no additional text:
+{
+  "questions": [
     {
-      "questions": [
-        {
-          "question": "string",
-          "options": ["string", "string", "string", "string"],
-          "correctAnswer": "string",
-          "explanation": "string"
-        }
-      ]
+      "question": "string",
+      "options": ["string", "string", "string", "string"],
+      "correctAnswer": "string",
+      "explanation": "string"
     }
-  `;
+  ]
+}`;
 
   try {
-    const result = await model.generateContent(prompt);
-    const response = result.response;
-    const text = response.text();
+    // Use the NEW Google GenAI SDK
+    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+    console.log("Attempting to generate quiz for industry:", user.industry);
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: prompt,
+    });
+
+    const text = response.text || response.content?.text || JSON.stringify(response);
+    console.log("Received response from Gemini API");
+    console.log("Response text:", text.substring(0, 200)); // Log first 200 chars for debugging
+
     const cleanedText = text.replace(/```(?:json)?\n?/g, "").trim();
     const quiz = JSON.parse(cleanedText);
 
     return quiz.questions;
   } catch (error) {
     console.error("Error generating quiz:", error);
+    console.error("Error details:", error.message);
+    if (error.response) {
+      console.error("API Response:", error.response);
+    }
     throw new Error("Failed to generate quiz questions");
   }
 }

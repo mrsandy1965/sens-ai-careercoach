@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import {
   PenBox,
@@ -17,21 +19,25 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
-import { checkUser } from "@/lib/checkUser";
 
-export default async function Header() {
-  await checkUser();
+export default function Header() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <header className="fixed top-0 w-full border-b bg-background/80 backdrop-blur-md z-50 supports-[backdrop-filter]:bg-background/60">
       <nav className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link href="/">
           <Image
-            src={"/logo.png"}
+            src="/logo.png"
             alt="Sensai Logo"
             width={200}
             height={60}
             className="h-12 py-1 w-auto object-contain"
+            priority
           />
         </Link>
 
@@ -54,32 +60,47 @@ export default async function Header() {
             {/* Growth Tools Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button className="flex items-center gap-2">
+                <Button className="flex items-center gap-2 relative group">
                   <StarsIcon className="h-4 w-4" />
                   <span className="hidden md:block">Growth Tools</span>
-                  <ChevronDown className="h-4 w-4" />
+                  <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem asChild>
-                  <Link href="/resume" className="flex items-center gap-2">
-                    <FileText className="h-4 w-4" />
-                    Build Resume
+              <DropdownMenuContent align="end" className="w-56 p-2">
+                <DropdownMenuItem asChild className="cursor-pointer">
+                  <Link href="/resume" className="flex items-center gap-3 p-3 rounded-md group hover:bg-blue-950/30 transition-all duration-200">
+                    <div className="p-2 rounded-lg bg-blue-500/10 group-hover:bg-blue-500/20 transition-colors">
+                      <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="font-medium">Build Resume</span>
+                      <span className="text-xs text-gray-400">Create professional CV</span>
+                    </div>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
+                <DropdownMenuItem asChild className="cursor-pointer">
                   <Link
                     href="/ai-cover-letter"
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-3 p-3 rounded-md group hover:bg-purple-950/30 transition-all duration-200"
                   >
-                    <PenBox className="h-4 w-4" />
-                    Cover Letter
+                    <div className="p-2 rounded-lg bg-purple-500/10 group-hover:bg-purple-500/20 transition-colors">
+                      <PenBox className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="font-medium">Cover Letter</span>
+                      <span className="text-xs text-gray-400">AI-powered writing</span>
+                    </div>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/interview" className="flex items-center gap-2">
-                    <GraduationCap className="h-4 w-4" />
-                    Interview Prep
+                <DropdownMenuItem asChild className="cursor-pointer">
+                  <Link href="/interview" className="flex items-center gap-3 p-3 rounded-md group hover:bg-green-950/30 transition-all duration-200">
+                    <div className="p-2 rounded-lg bg-green-500/10 group-hover:bg-green-500/20 transition-colors">
+                      <GraduationCap className="h-4 w-4 text-green-600 dark:text-green-400" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="font-medium">Interview Prep</span>
+                      <span className="text-xs text-gray-400">Practice & improve</span>
+                    </div>
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -93,16 +114,17 @@ export default async function Header() {
           </SignedOut>
 
           <SignedIn>
-            <UserButton
-              appearance={{
-                elements: {
-                  avatarBox: "w-10 h-10",
-                  userButtonPopoverCard: "shadow-xl",
-                  userPreviewMainIdentifier: "font-semibold",
-                },
-              }}
-              afterSignOutUrl="/"
-            />
+            {mounted && (
+              <UserButton
+                appearance={{
+                  elements: {
+                    avatarBox: "w-10 h-10",
+                    userButtonPopoverCard: "shadow-xl",
+                    userPreviewMainIdentifier: "font-semibold",
+                  },
+                }}
+              />
+            )}
           </SignedIn>
         </div>
       </nav>
